@@ -17,26 +17,28 @@ if ($_SESSION['role_id'] != 3) {
         <tbody>
             <?php
             // Ahora sí usamos JOIN para traer los datos de las otras tablas
-            $query = "SELECT orders.id, dishes.name AS nombre_plato, users.username, orders.status 
-                      FROM orders 
-                      JOIN dishes ON orders.dish_id = dishes.id 
-                      JOIN users ON orders.user_id = users.id 
-                      WHERE orders.status = 1"; // 1 es 'Listo'
-
+           // Consulta para el Mesero: solo los pedidos marcados como "listos" (status 1)
+$query = "SELECT orders.id, users.username, dishes.name AS dish_name, orders.status 
+          FROM orders 
+          INNER JOIN users ON orders.user_id = users.id 
+          INNER JOIN dishes ON orders.dish_id = dishes.id 
+          WHERE orders.status = 1 
+          ORDER BY orders.id DESC";
             $result = mysqli_query($conexion, $query);
-
-            if ($result && mysqli_num_rows($result) > 0) {
+if ($result && mysqli_num_rows($result) > 0) {
                 while ($order = mysqli_fetch_assoc($result)) {
+                    // AQUÍ ESTABA EL ERROR: cambiamos 'nombre_plato' por 'dish_name'
                     echo "<tr>
-                        <td>{$order['id']}</td>
-                        <td>{$order['nombre_plato']}</td>
-                        <td>{$order['username']}</td>
-                        <td>
-                            <a href='update_order.php?id={$order['id']}&accion=pagado' class='btn btn-primary btn-sm'>Confirmar Pago</a>
-                        </td>
-                    </tr>";
+                            <td>{$order['id']}</td>
+                            <td>{$order['dish_name']}</td> 
+                            <td>{$order['username']}</td>
+                            <td>
+                                <a href='update_order.php?id={$order['id']}&accion=pagado' class='btn btn-primary btn-sm'>Confirmar Pago</a>
+                            </td>
+                        </tr>";
                 }
-            } else {
+            }
+             else {
                 echo "<tr><td colspan='4' class='text-center'>No hay pedidos listos.</td></tr>";
             }
             ?>
