@@ -1,0 +1,11 @@
+# Carpetas de configuración y temporales
+.vscode/
+.idea/
+nbproject/
+*.log
+
+# Base de datos local (nunca subas archivos de config con claves reales)
+config/conexion.php
+
+# Carpetas de sesiones
+tmp/
