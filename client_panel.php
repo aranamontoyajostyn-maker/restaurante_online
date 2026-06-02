@@ -1,50 +1,30 @@
-<?php
-// 1. Aseguramos que solo el cliente pueda estar aquí
-session_start();
-include('includes/auth.php'); // Esto verifica que la sesión esté activa
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Nuestro Menú</h2>
+    <div class="row">
+        <?php
+        // Asegúrate de incluir la conexión antes de esta consulta
+        require_once 'config/conexion.php'; 
 
-// Verificación adicional de rol (seguridad extra)
-if ($_SESSION['role_id'] != 4) {
-    echo "No tienes permiso para acceder a esta página.";
-    exit();
-}
-?>
+        $query_dishes = "SELECT name, description, price FROM dishes";
+        $result_dishes = mysqli_query($conexion, $query_dishes);
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Panel de Cliente</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">Mi Restaurante</a>
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link" href="logout.php">Cerrar Sesión</a>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-5">
-    <h1 class="text-center">Bienvenido, Cliente</h1>
-    <p class="text-center">Aquí podrás ver tus pedidos y realizar nuevas órdenes.</p>
-    
-    <div class="row mt-4">
-        <div class="col-md-6 offset-md-3">
-            <div class="card p-4">
-                <h5>Opciones disponibles:</h5>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Ver menú</li>
-                    <li class="list-group-item">Mis pedidos recientes</li>
-                    <li class="list-group-item">Editar perfil</li>
-                </ul>
-            </div>
-        </div>
+        if (mysqli_num_rows($result_dishes) > 0) {
+            while ($dish = mysqli_fetch_assoc($result_dishes)) {
+                echo '
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">' . htmlspecialchars($dish['name']) . '</h5>
+                            <p class="card-text text-muted">' . htmlspecialchars($dish['description']) . '</p>
+                            <p class="card-text fw-bold">Precio: $' . number_format($dish['price'], 2) . '</p>
+                            <button class="btn btn-outline-success w-100">Agregar al Pedido</button>
+                        </div>
+                    </div>
+                </div>';
+            }
+        } else {
+            echo '<p class="text-center">No hay platos disponibles en este momento.</p>';
+        }
+        ?>
     </div>
 </div>
-
-</body>
-</html>
